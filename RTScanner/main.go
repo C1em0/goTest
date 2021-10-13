@@ -46,7 +46,3 @@ func main() {
 func init() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 }
-
-func test()  {
-	fmt.Println("this is a test line.")
-}

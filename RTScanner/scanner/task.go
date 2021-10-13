@@ -3,6 +3,7 @@ package scanner
 import (
 	"fmt"
 	"net"
+	"os"
 	"strings"
 	"sync"
 
@@ -48,12 +49,12 @@ func Scan(taskChan chan map[string]int, wg *sync.WaitGroup) {
 	for task := range taskChan {
 		for ip, port := range task {
 			flag := strings.ToLower(config.Mode)
-			switch  {
+			switch {
 			case flag == "tcp":
 				err := SaveResult(Connect(ip, port))
 				_ = err
 			case flag == "syn":
-				s, err:= newSynScanner(ip, port)
+				s, err := newSynScanner(ip, port)
 				err = SaveResult(s.scan())
 				s.close()
 				_ = err
@@ -87,9 +88,35 @@ func SaveResult(ip string, port int, err error) error {
 
 func PrintResult() {
 	config.Result.Range(func(key, value interface{}) bool {
-		fmt.Printf("[+] "+"IP: %v\t", key)
+		fmt.Printf(" --> "+"IP: %v\t", key)
 		fmt.Printf("PORTS: %v\n", value)
 		//fmt.Println(strings.Repeat("", 40))
+		return true
+	})
+}
+
+func SaveToText() {
+	filePath := "./results.txt"
+	file, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		fmt.Println("打开文件错误。")
+		return
+	}
+
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			fmt.Println("文件句柄关闭失败。")
+			return
+		}
+	}(file)
+
+	//开始写入文件
+	timeFlag := config.ScanTime()
+	fmt.Fprintf(file, "[*] %v\n\n", timeFlag)
+	config.Result.Range(func(key, value interface{}) bool {
+		fmt.Fprintf(file, " --> "+"IP: %v\t", key)
+		fmt.Fprintf(file, "PORTS: %v\n", value)
 		return true
 	})
 }

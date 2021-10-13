@@ -36,10 +36,13 @@ func main() {
 	scanner.RunTask(tasks)
 	long := time.Since(start)
 
+	timeFlag := config.ScanTime()
+	fmt.Printf("[*] %v\n\n", timeFlag)
 	//defer fmt.Println("=========================")
 	//fmt.Printf("[Done] The duration is %v \n", long)
 	scanner.PrintResult()
-	fmt.Println("===================================")
+	scanner.SaveToText()
+	fmt.Println("===============================================")
 	fmt.Printf("[Done] The duration is %v \n", long)
 }
 

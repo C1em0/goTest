@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"reflect"
 	"strings"
 	"sync"
 
@@ -97,7 +98,9 @@ func PrintResult() {
 
 func SaveToText() {
 	filePath := "./results.txt"
+	targetFilePath := "./target/target"
 	file, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
+	targetFile, err := os.OpenFile(targetFilePath, os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		fmt.Println("打开文件错误。")
 		return
@@ -117,6 +120,18 @@ func SaveToText() {
 	config.Result.Range(func(key, value interface{}) bool {
 		fmt.Fprintf(file, " --> "+"IP: %v\t", key)
 		fmt.Fprintf(file, "PORTS: %v\n", value)
+		return true
+	})
+
+	config.Result.Range(func(key, value interface{}) bool {
+		ports := reflect.ValueOf(value)
+		if ports.Len() > 1 {
+			for i := 0; i < ports.Len(); i++ {
+				fmt.Fprintf(targetFile, "%v:%v\n", key, ports.Index(i))
+			}
+		} else {
+			fmt.Fprintf(targetFile, "%v:%v\n", key, ports.Index(0))
+		}
 		return true
 	})
 }

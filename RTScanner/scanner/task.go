@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"projectv1/RTScanner/crack"
+	"projectv1/RTScanner/crack/models"
 	"reflect"
 	"strings"
 	"sync"
@@ -84,6 +86,7 @@ func SaveResult(ip string, port int, err error) error {
 		ports = append(ports, port)
 		config.Result.Store(ip, ports)
 	}
+	checkService(ip, port)
 	return err
 }
 
@@ -134,4 +137,68 @@ func SaveToText() {
 		}
 		return true
 	})
+}
+
+func checkService(ip string, port int) {
+	var ipInfo models.IpAddr
+	ipInfo.IP = ip
+	ipInfo.Port = port
+
+	wgCheck := &sync.WaitGroup{}
+
+	switch port {
+	case config.PortsFlag["ftp"]:
+		//fmt.Println("[*] One ftp port found.")
+		ipInfo.Protocol = "ftp"
+		tasks, num := crack.InitTask(ipInfo)
+		go crack.RunTasks(tasks, num, wgCheck)
+		wgCheck.Add(1)
+		wgCheck.Wait()
+	case config.PortsFlag["ssh"]:
+		//fmt.Println("[*] One ssh port found.")
+		ipInfo.Protocol = "ssh"
+		tasks, num := crack.InitTask(ipInfo)
+		go crack.RunTasks(tasks, num, wgCheck)
+		wgCheck.Add(1)
+		wgCheck.Wait()
+	case config.PortsFlag["redis"]:
+		//fmt.Println("[*] One redis port found.")
+		ipInfo.Protocol = "redis"
+		tasks, num := crack.InitTask(ipInfo)
+		go crack.RunTasks(tasks, num, wgCheck)
+		wgCheck.Add(1)
+		wgCheck.Wait()
+	case config.PortsFlag["oracle"]:
+		//fmt.Println("[*] One oracle port found.")
+		ipInfo.Protocol = "oracle"
+		tasks, num := crack.InitTask(ipInfo)
+		go crack.RunTasks(tasks, num, wgCheck)
+		wgCheck.Add(1)
+		wgCheck.Wait()
+	case config.PortsFlag["mssql"]:
+		//fmt.Println("[*] One mssql port found.")
+		ipInfo.Protocol = "mssql"
+		tasks, num := crack.InitTask(ipInfo)
+		go crack.RunTasks(tasks, num, wgCheck)
+		wgCheck.Add(1)
+		wgCheck.Wait()
+	case config.PortsFlag["mysql"]:
+		//fmt.Println("[*] One mysql port found.")
+		ipInfo.Protocol = "mysql"
+		tasks, num := crack.InitTask(ipInfo)
+		go crack.RunTasks(tasks, num, wgCheck)
+		wgCheck.Add(1)
+		wgCheck.Wait()
+	case config.PortsFlag["mgo"]:
+		//fmt.Println("[*] One mgo port found.")
+		ipInfo.Protocol = "mangodb"
+		tasks, num := crack.InitTask(ipInfo)
+		go crack.RunTasks(tasks, num, wgCheck)
+		wgCheck.Add(1)
+		wgCheck.Wait()
+	default:
+		return
+	}
+
+	return
 }

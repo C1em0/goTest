@@ -21,6 +21,16 @@ var Scan = cli.Command{
 	},
 }
 
+var Crack = cli.Command{
+	Name:        "crack",
+	Usage:       "start to crack weakPass",
+	Description: "Crack ports",
+	Action:      util.Crack,
+	Flags: []cli.Flag{
+		stringFlag("target, t", "../target/target", "crack list"),
+	},
+}
+
 func stringFlag(name, value, usage string) cli.StringFlag {
 	return cli.StringFlag{
 		Name:  name,

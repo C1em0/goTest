@@ -10,9 +10,10 @@ import (
 	"github.com/malfunkt/iprange"
 	"github.com/urfave/cli"
 
-	_ "projectv1/RTScanner/scanner"
 	"projectv1/RTScanner/config"
+	_ "projectv1/RTScanner/scanner"
 )
+
 func GetPorts(selection string) ([]int, error) {
 	ports := make([]int, 0)
 	//检测若是用户没有输入扫描端口那就直接返回
@@ -57,7 +58,6 @@ func GetPorts(selection string) ([]int, error) {
 	}
 	return ports, nil
 }
-
 
 func GetIpList(ips string) ([]net.IP, error) {
 
@@ -108,12 +108,10 @@ func Scan(ctx *cli.Context) {
 	if strings.ToLower(config.Mode) == "syn" {
 		CheckRoot()
 	}
-	//
-	//ips, err := GetIpList(config.Host)
-	//ports, err := GetPorts(config.Port)
-	//tasks, n := scanner.GenerateTask(ips, ports)
-	//_ = n
-	//scanner.RunTask(tasks)
-	//scanner.PrintResult()
-	//return err
+}
+
+func Crack(ctx *cli.Context) {
+	if ctx.IsSet("target") {
+		config.CrackIpFile = ctx.String("target")
+	}
 }
